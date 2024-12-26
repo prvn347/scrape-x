@@ -29,7 +29,7 @@ export default function TrendScraper() {
     try {
       setLoading(true)
       setError(null)
-      const response = await fetch("http://localhost:3000/scrape", {
+      const response = await fetch("https://https://scrape-x.onrender.com/scrape", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
