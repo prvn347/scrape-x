@@ -1,64 +1,76 @@
-
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Loader2, TrendingUp, Hash, Clock, Globe, RefreshCw } from 'lucide-react'
-import { motion } from "framer-motion"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Loader2,
+  TrendingUp,
+  Hash,
+  Clock,
+  Globe,
+  RefreshCw,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 export interface TrendData {
-  scrapeId: string
-  trend1: string
-  trend2: string
-  trend3: string
-  trend4: string
-  trend5: string
-  timestamp: string
-  ipAddress: string
-  _id: string
-  __v: number
+  scrapeId: string;
+  trend1: string;
+  trend2: string;
+  trend3: string;
+  trend4: string;
+  trend5: string;
+  timestamp: string;
+  ipAddress: string;
+  _id: string;
+  __v: number;
 }
 
 export default function TrendScraper() {
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<TrendData | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<TrendData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleScrape = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
       const response = await fetch("https://scrape-x.onrender.com/scrape", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-      })
+      });
 
-      const data = await response.json()
-      setResult(data.data.data)
+      const data = await response.json();
+      setResult(data.data.data);
     } catch (err) {
-      setError("Failed to scrape trends. " + err)
+      setError("Failed to scrape trends. " + err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
+        staggerChildren: 0.1,
+      },
+    },
+  };
 
   const item = {
     hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  }
+    show: { opacity: 1, y: 0 },
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 md:p-8">
@@ -73,9 +85,9 @@ export default function TrendScraper() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <Button 
-            onClick={handleScrape} 
-            disabled={loading} 
+          <Button
+            onClick={handleScrape}
+            disabled={loading}
             className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 transition-all duration-300"
             size="lg"
           >
@@ -99,7 +111,7 @@ export default function TrendScraper() {
           )}
 
           {result && (
-            <motion.div 
+            <motion.div
               className="space-y-6"
               variants={container}
               initial="hidden"
@@ -118,13 +130,9 @@ export default function TrendScraper() {
                   result.trend2,
                   result.trend3,
                   result.trend4,
-                  result.trend5
+                  result.trend5,
                 ].map((trend, index) => (
-                  <motion.div 
-                    key={index}
-                    variants={item}
-                    className="group"
-                  >
+                  <motion.div key={index} variants={item} className="group">
                     <Card className="transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
                       <CardContent className="p-4 flex items-center space-x-3">
                         <span className="text-2xl font-bold text-blue-500/20 group-hover:text-blue-500/40 transition-colors">
@@ -154,6 +162,5 @@ export default function TrendScraper() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

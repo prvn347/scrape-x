@@ -4,10 +4,11 @@ import chrome from "selenium-webdriver/chrome";
 import connectDB from "./db";
 import { Trend } from "./model";
 
+
 async function waitForElement(
   driver: WebDriver,
   selector: string,
-  timeout = 30000
+  timeout = 10000
 ) {
   try {
     await driver.wait(until.elementLocated(By.css(selector)), timeout);
@@ -47,30 +48,30 @@ export async function scrapeTrends() {
 
   try {
     await connectDB();
-
+    
     const options = new chrome.Options();
     options.addArguments(
-      "--headless",
-      "--disable-gpu",
+      "--headless", 
+      "--disable-gpu", 
       "--no-sandbox",
       "--disable-dev-shm-usage",
       "--disable-notifications",
       "--ignore-certificate-errors",
       "--disable-blink-features=AutomationControlled",
-      "--single-process",
-      "--disable-background-timer-throttling",
-      "--disable-backgrounding-occluded-windows",
-      "--disable-renderer-backgrounding",
       "--disable-extensions",
       "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
     );
-
+    
     driver = await new Builder()
       .forBrowser("chrome")
       .setChromeOptions(options)
       .build();
 
-    await driver.manage().setTimeouts({ implicit: 10000 });
+   
+    await driver.manage().setTimeouts({
+      implicit: 20000, 
+      pageLoad: 30000,
+    });
 
     console.log("Navigating to Twitter login page...");
     await driver.get("https://x.com/i/flow/login");
@@ -78,7 +79,7 @@ export async function scrapeTrends() {
     await driver.wait(until.titleContains("X"), 10000);
 
     console.log("Waiting for login form...");
-    await driver.sleep(3000); // Add small delay for page to fully load
+    await driver.sleep(3000);
     const usernameInput = await waitForElement(
       driver,
       'input[autocomplete="username"]'
@@ -97,10 +98,12 @@ export async function scrapeTrends() {
     }
 
     console.log("Entering password...");
-    await driver.sleep(2000); // Add small delay for password field to appear
-    const passwordInput = await waitForElement(
-      driver,
-      'input[name="password"]'
+    await driver.sleep(2000); 
+    
+    const passwordInput = await driver.wait(
+      until.elementLocated(By.css('input[name="password"]')),
+      20000, 
+      "Password field not found"
     );
     await passwordInput.clear();
     await passwordInput.sendKeys(process.env.TWITTER_PASSWORD as string);
