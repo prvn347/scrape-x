@@ -51,17 +51,16 @@ export async function scrapeTrends() {
     
     const options = new chrome.Options();
     options.addArguments(
-      "--headless", 
-      "--disable-gpu", 
-      "--no-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-notifications",
-      "--ignore-certificate-errors",
+      "--start-maximized",
       "--disable-blink-features=AutomationControlled",
       "--disable-extensions",
+      "--disable-notifications",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--ignore-certificate-errors",
       "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
     );
-    
     driver = await new Builder()
       .forBrowser("chrome")
       .setChromeOptions(options)
@@ -69,17 +68,17 @@ export async function scrapeTrends() {
 
    
     await driver.manage().setTimeouts({
-      implicit: 20000, 
-      pageLoad: 30000,
+      implicit: 30000, 
+      pageLoad: 50000,
     });
 
     console.log("Navigating to Twitter login page...");
     await driver.get("https://x.com/i/flow/login");
 
-    await driver.wait(until.titleContains("X"), 10000);
+    await driver.wait(until.titleContains("X"), 20000);
 
     console.log("Waiting for login form...");
-    await driver.sleep(3000);
+    await driver.sleep(6000);
     const usernameInput = await waitForElement(
       driver,
       'input[autocomplete="username"]'
@@ -102,7 +101,7 @@ export async function scrapeTrends() {
     
     const passwordInput = await driver.wait(
       until.elementLocated(By.css('input[name="password"]')),
-      20000, 
+      50000, 
       "Password field not found"
     );
     await passwordInput.clear();
