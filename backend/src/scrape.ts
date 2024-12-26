@@ -87,7 +87,7 @@ export async function scrapeTrends() {
     await usernameInput.clear();
     await usernameInput.sendKeys(process.env.TWITTER_USERNAME as string);
 
-    console.log("Clicking next...");
+    console.log("Clicking next after username...");
     const nextButtons = await driver.findElements(By.css('[role="button"]'));
     for (const button of nextButtons) {
       const text = await button.getText();
@@ -95,6 +95,44 @@ export async function scrapeTrends() {
         await button.click();
         break;
       }
+    }
+
+    console.log("Checking for verification step...");
+    await driver.sleep(2000);
+    try {
+      const verificationInput = await driver.wait(
+        until.elementLocated(
+          By.css('input[placeholder*="phone" i], input[placeholder*="email" i], [name="text"]')
+        ),
+        5000
+      );
+      
+      if (verificationInput) {
+        console.log("Phone/Email verification page detected");
+        await verificationInput.clear();
+        await verificationInput.sendKeys(process.env.TWITTER_PHONE as string);
+
+        
+        const verifyNextButtons = await driver.findElements(
+          By.css('[role="button"]')
+        );
+        for (const button of verifyNextButtons) {
+          try {
+            const text = await button.getText();
+            if (text.toLowerCase() === "next") {
+              await driver.wait(until.elementIsEnabled(button), 5000);
+              await button.click();
+              console.log("Clicked next after entering phone/email");
+              break;
+            }
+          } catch (err) {
+            continue;
+          }
+        }
+        await driver.sleep(3000);
+      }
+    } catch (error) {
+      console.log("No verification step found, proceeding to password...");
     }
 
     console.log("Entering password...");
