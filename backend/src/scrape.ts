@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from "uuid";
 import { Builder, By, until, WebDriver, WebElement } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome";
@@ -8,7 +7,7 @@ import { Trend } from "./model";
 async function waitForElement(
   driver: WebDriver,
   selector: string,
-  timeout = 10000
+  timeout = 30000
 ) {
   try {
     await driver.wait(until.elementLocated(By.css(selector)), timeout);
@@ -21,28 +20,28 @@ async function waitForElement(
   }
 }
 async function extractTrendingTopic(trendElement: WebElement): Promise<string> {
-    try {
-      const textElements = await trendElement.findElements(By.css('[dir="ltr"]'));
-      for (const element of textElements) {
-        const text = await element.getText();
-  
-        if (
-          text.trim() &&
-          !text.includes("Trending") &&
-          !text.includes("Entertainment") &&
-          !text.includes("Sports") &&
-          !text.includes("News") &&
-          !text.includes("posts")
-        ) {
-          return text.trim(); 
-        }
+  try {
+    const textElements = await trendElement.findElements(By.css('[dir="ltr"]'));
+    for (const element of textElements) {
+      const text = await element.getText();
+
+      if (
+        text.trim() &&
+        !text.includes("Trending") &&
+        !text.includes("Entertainment") &&
+        !text.includes("Sports") &&
+        !text.includes("News") &&
+        !text.includes("posts")
+      ) {
+        return text.trim();
       }
-      return "Failed to extract trend";
-    } catch (error) {
-      console.error("Error extracting trend:", error);
-      return "Failed to extract trend";
     }
+    return "Failed to extract trend";
+  } catch (error) {
+    console.error("Error extracting trend:", error);
+    return "Failed to extract trend";
   }
+}
 export async function scrapeTrends() {
   let driver: WebDriver | null = null;
 
@@ -51,17 +50,20 @@ export async function scrapeTrends() {
 
     const options = new chrome.Options();
     options.addArguments(
-        "--headless", 
-        "--disable-gpu", 
-        "--no-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-notifications",
-        "--ignore-certificate-errors",
-        "--disable-blink-features=AutomationControlled",
-        "--disable-extensions",
-        "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-      );
-      
+      "--headless",
+      "--disable-gpu",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-notifications",
+      "--ignore-certificate-errors",
+      "--disable-blink-features=AutomationControlled",
+      "--single-process",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-renderer-backgrounding",
+      "--disable-extensions",
+      "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    );
 
     driver = await new Builder()
       .forBrowser("chrome")
@@ -114,7 +116,7 @@ export async function scrapeTrends() {
     }
 
     console.log("Waiting for home page...");
-    await driver.sleep(5000); 
+    await driver.sleep(5000);
 
     console.log("Waiting for trends section...");
     await driver.wait(
@@ -125,9 +127,9 @@ export async function scrapeTrends() {
     console.log("Fetching trends...");
     const trends = await driver.findElements(By.css('[data-testid="trend"]'));
     const trendTexts = await Promise.all(
-        trends.slice(0, 5).map(async (trend) => {
-            return await extractTrendingTopic(trend);
-          })
+      trends.slice(0, 5).map(async (trend) => {
+        return await extractTrendingTopic(trend);
+      })
     );
 
     console.log("Getting IP address...");
