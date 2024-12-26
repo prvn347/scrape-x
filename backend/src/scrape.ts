@@ -79,7 +79,7 @@ export async function scrapeTrends() {
     await driver.wait(until.titleContains("X"), 20000);
 
     console.log("Waiting for login form...");
-    await driver.sleep(6000);
+    await driver.sleep(2000);
     const usernameInput = await waitForElement(
       driver,
       'input[autocomplete="username"]'
@@ -119,7 +119,7 @@ export async function scrapeTrends() {
     }
 
     console.log("Waiting for home page...");
-    await driver.sleep(5000);
+    await driver.sleep(3000);
 
     console.log("Waiting for trends section...");
     await driver.wait(
