@@ -51,16 +51,17 @@ export async function scrapeTrends() {
     
     const options = new chrome.Options();
     options.addArguments(
-      "--start-maximized",
-      "--disable-blink-features=AutomationControlled",
-      "--disable-extensions",
-      "--disable-notifications",
+      "--headless", // Run in headless mode
+      "--disable-gpu", // Disable GPU rendering
       "--no-sandbox",
       "--disable-dev-shm-usage",
-      "--disable-gpu",
+      "--disable-notifications",
       "--ignore-certificate-errors",
+      "--disable-blink-features=AutomationControlled",
+      "--disable-extensions",
       "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
     );
+    
     driver = await new Builder()
       .forBrowser("chrome")
       .setChromeOptions(options)
